@@ -1,9 +1,9 @@
-// ==UserScript==
-// @name        Autoplay
-// @namespace   leekwars
-// @include     http://leekwars.com/garden
-// @version     1
-// ==/UserScript==
+/// ==UserScript==
+/// @name        Autoplay
+/// @namespace   leekwars
+/// @include     http://leekwars.com/garden
+/// @version     1
+/// ==/UserScript==
 
 function main() {
     /* Constants */
@@ -75,6 +75,7 @@ function main() {
     }
 
     function attackGroup(eGroup, callback) {
+        Toast("compo attack: " + _myCompo + " vs " + eGroup, null);
         console.log("[attackGroup] " + _myCompo + " vs " + eGroup);
         ajax('garden_update', {my_team: _myCompo, target_team: eGroup}, function(data) {
             if (!isNaN(parseInt(data))) {
@@ -86,6 +87,7 @@ function main() {
     }
 
     function attackFarmer(eFarmer, callback) {
+        Toast("farmer attack: " + eFarmer, null);
         console.log("[attackFarmer] me vs " + eFarmer);
         ajax('garden_update', {target_farmer: eFarmer}, function(data) {
             if (!isNaN(parseInt(data))) {
@@ -104,8 +106,10 @@ function main() {
         if (c > 0) {
             challengeLeek(mLeek, eLeek, function(score) {
                 if (score == 2) {
+                    Toast("[challenge] " + mLeek + " won against " + eLeek, null);
                     enqueue(function() { soloFight(mLeek, eLeek, (c - 1)); });
                 } else {
+                    Toast("[challenge] " + mLeek + " didn't win against " + eLeek, null);
                     console.warn("[soloFight] lost challenge against " + eLeek + ": aborting");
                 }
             });
@@ -113,8 +117,10 @@ function main() {
             soloFights[mLeek] -= 1;
             attackLeek(mLeek, eLeek, function(score) {
                 if (score == 2) {
+                    Toast("[attack] " + mLeek + " won against " + eLeek, null);
                     enqueue(function() { soloFight(mLeek, eLeek, 0); });
                 } else {
+                    Toast("[attack] " + mLeek + " didn't win against " + eLeek, null);
                     console.error("[soloFight] lost attack against " + eLeek + ": aborting");
                 }
             });
