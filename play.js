@@ -16,6 +16,7 @@ function main() {
 
     var leekAction = [];
     var soloFights = {};
+    var prcTimeout = null;
 
 
 
@@ -23,19 +24,22 @@ function main() {
 
     function enqueue(fun) {
         leekAction.push(fun);
+        schedule();
     }
 
     function proceed() {
+        prcTimeout = null;
         if (leekAction.length > 0) {
-            action = leekAction.shift();
-            action();
+            leekAction.shift()();
+            schedule();
         }
     }
 
     function schedule() {
-        setTimeout(proceed, TIME_DELAY);
+        if (prcTimeout == null) {
+            prcTimeout = setTimeout(proceed, TIME_DELAY);
+        }
     }
-
 
 
     /* API abuse */
@@ -56,7 +60,6 @@ function main() {
             } else {
                 console.error("[challengeLeek] API call returned: " + data);
             }
-            schedule();
         });
     }
 
@@ -68,7 +71,6 @@ function main() {
             } else {
                 console.error("[attackLeek] API call returned: " + data);
             }
-            schedule();
         });
     }
 
@@ -79,7 +81,6 @@ function main() {
                 callback();
             } else {
                 console.error("[attackGroup] API call returned: " + data);
-                schedule();
             }
         });
     }
@@ -91,7 +92,6 @@ function main() {
                 callback();
             } else {
                 console.error("[attackFarmer] API call returned: " + data);
-                schedule();
             }
         });
     }
@@ -108,7 +108,6 @@ function main() {
                 } else {
                     console.warn("[soloFight] lost challenge against " + eLeek + ": aborting");
                 }
-                schedule();
             });
         } else if (soloFights[mLeek] > 0) {
             soloFights[mLeek] -= 1;
@@ -118,34 +117,23 @@ function main() {
                 } else {
                     console.error("[soloFight] lost attack against " + eLeek + ": aborting");
                 }
-                schedule();
             });
-        } else {
-            proceed();
         }
     }
 
     function groupFight(eGroup, a) {
         if (a > 0) {
             attackGroup(eGroup, function() {
-                if (a > 1)
-                    enqueue(function() { groupFight(eGroup, a - 1); });
-                schedule();
+                enqueue(function() { groupFight(eGroup, a - 1); });
             });
-        } else {
-            proceed();
         }
     }
 
     function farmerFight(eFarmer, a) {
         if (a > 0) {
             attackFarmer(eFarmer, function() {
-                if (a > 1)
-                    enqueue(function() { farmerFight(eFarmer, a - 1); });
-                schedule();
+                enqueue(function() { farmerFight(eFarmer, a - 1); });
             });
-        } else {
-            proceed();
         }
     }
 
@@ -261,7 +249,6 @@ function main() {
                 enqueueSoloFight(mLeek, eLeek, 2);
             }
         }
-        proceed();
     }
 
     function addAutoPlayButton() {
