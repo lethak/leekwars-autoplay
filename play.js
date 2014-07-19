@@ -32,6 +32,9 @@ function main() {
         if (leekAction.length > 0) {
             leekAction.shift()();
             schedule();
+        } else {
+            Toast("All done.", 10000);
+            resetButton();
         }
     }
 
@@ -235,6 +238,22 @@ function main() {
 
 
 
+    /* UI */
+
+    function resetButton() {
+        var b = document.getElementById("autoPlayButton");
+        b.innerHTML = "Autplay!";
+        b.disabled = false;
+    }
+
+    function disableButton() {
+        var b = document.getElementById("autoPlayButton");
+        b.innerHTML = "Running...";
+        b.disabled = true;
+    }
+
+
+
     /* Main stuff */
 
     function enqueueSoloFight(m, e, c) {
@@ -242,6 +261,8 @@ function main() {
     }
 
     function autoPlay() {
+        disableButton();
+
         enqueue(function() {  groupFight(getBestGroup(),  getRemainingGroupFights());  });
         enqueue(function() { farmerFight(getBestFarmer(), getRemainingFarmerFights()); });
 
