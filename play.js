@@ -8,7 +8,7 @@
 function main() {
     /* Constants */
 
-    var TIME_DELAY = 6000;
+    var TIME_DELAY = 5000;
 
 
 
